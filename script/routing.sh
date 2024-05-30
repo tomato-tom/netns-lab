@@ -22,7 +22,7 @@ ip address add 10.0.1.1/24 dev netns-veth0
 ip netns exec rt1 ip link set veth0 up
 ip netns exec rt1 ip address add 10.0.1.2/24 dev veth0
 
-# rt1[veth0] <---> [veth0]rt2
+# rt1[veth1] <---> [veth0]rt2
 ip link add veth1 netns rt1 type veth peer name veth0 netns rt2
 ip netns exec rt1 ip link set veth1 up
 ip netns exec rt1 ip address add 10.0.2.1/24 dev veth1
