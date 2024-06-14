@@ -1,12 +1,9 @@
 # netns-lab
 
 ネームスペースでネットワーク検証<br>
-root権限必要です
-
 動作確認 Ubuntu 24.04<br>
-[script](
-https://github.com/tomato-tom/netns-lab/tree/main/script
-)
+**root権限必要です**
+
 
 ### 主要ツール
 
@@ -41,8 +38,11 @@ Error: Unknown device type.
 # modprobe -c | grep veth
 alias rtnl_link_veth veth
 
-# echo "rtnl_link_veth" /etc/modules-load.d/rtnl_link_veth.conf
+# echo "rtnl_link_veth" > /etc/modules-load.d/rtnl_link_veth.conf
 ```
 [カーネルモジュール](
 https://wiki.archlinux.jp/index.php/%E3%82%AB%E3%83%BC%E3%83%8D%E3%83%AB%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB
 )
+
+bondingできない - Archlinux
+
