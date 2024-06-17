@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-#set -x
 
 # クライアントから(WAN)に向けたパケットの送信元アドレスを(router)のWAN側IPアドレスに変換
 #
@@ -66,5 +64,5 @@ echo -e "\nWANからclient-1にping送ります..."
 ip netns exec WAN ping -c 3 -R 10.0.1.1
 
 # 片付け
-ip --all delete
+ip --all netns delete
 
