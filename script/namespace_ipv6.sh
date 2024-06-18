@@ -1,13 +1,17 @@
 #!/bin/bash
 
-
-# ２つのネームスペース間のipv6通信
+# IPv6 communication between two namespaces
+#
+# this script creates two network namespaces (node-1 and node-2), 
+# assigns virtual ethernet interfaces to them, 
+# sets IPv6 addresses, and verifies the connectivity with a ping command.
 
 # [node-1]o----o[node2]
 #
 # name   nic   ip address
 # node-1 veth1  f::1
 # node-2 veth2  f::2
+
 
 # Create network namespaces for node-1 and node-2
 echo "Create network namespaces"

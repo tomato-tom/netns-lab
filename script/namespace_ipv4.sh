@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# ２つのネームスペース間のipv4通信
+# IPv4 communication between two namespaces
+#
+# this script creates two network namespaces (node-1 and node-2), 
+# assigns virtual ethernet interfaces to them, 
+# sets IPv4 addresses, and verifies the connectivity with a ping command.
 
 # [node-1]o----o[node2]
 #
-# node-1 veth1 10.0.0.1
-# node-2 veth2 10.0.0.2
+# name   nic   ip address
+# node-1 veth1 10.0.0.1/24
+# node-2 veth2 10.0.0.2/24
 
 
 # Create network namespaces for node-1 and node-2
