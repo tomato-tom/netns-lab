@@ -175,15 +175,12 @@ hosts=$(cat << EOF
 EOF
 )
 
-for i in {1..3}; do
-	mkdir /etc/netns/rt${i}
-	echo "${hosts}" > /etc/netns/rt${i}/hosts
-done
 for i in {1..6}; do
-	mkdir /etc/netns/ns${i}
+	mkdir -p /etc/netns/ns${i}
 	echo "${hosts}" > /etc/netns/ns${i}/hosts
 done
 
+echo "$hosts"
 
 #set -x
 # 片付け
