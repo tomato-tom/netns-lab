@@ -49,7 +49,7 @@ ns1 ~~~ ns2
 
 vethペア（仮想LANケーブル）でつなげる
 ```sh
-ip link add veth0 netns ns1 type veth peer netns ns2
+ip link add veth0 netns ns1 type veth0 peer netns ns2
 ```
 
 ```mermaid
