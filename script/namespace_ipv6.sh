@@ -12,6 +12,11 @@
 # node-1 veth1  f::1
 # node-2 veth2  f::2
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
 
 # Create network namespaces for node-1 and node-2
 echo "Create network namespaces"
@@ -41,6 +46,6 @@ echo -e "\nPing from node-1 to node-2"
 ip netns exec node-1 ping -c 5 f::2
 
 # Delete namespaces
-echo -e "\nDelete all network namespaces"
-ip --all netns delete
+#echo -e "\nDelete all network namespaces"
+#ip --all netns delete
 

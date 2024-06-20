@@ -38,6 +38,12 @@
 #   ns5 eth0 1.1.3.1   --> netnsbr3en1
 #   ns6 eth0 1.1.3.2   --> netnsbr3en2
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
+
 
 # ノード作成
 for i in {1..6}; do

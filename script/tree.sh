@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+# router,switch,subnet,bridge
 
 # RT0 [en0] -----> [balckhole]
 #       |.2
@@ -43,6 +44,11 @@
 #       |.1
 # NS00[eth0]
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
 
 # RT -----------------------------------------------
 ip netns add RT0
@@ -166,7 +172,7 @@ ip netns exec L2BR4 ip link set en0 master br0
 ip netns exec L2BR4 ip link set en0 up
 
 
-# NS -------------------------------------------------
+# Node -------------------------------------------------
 
 # create namespaces
 for i in {00..10}; do

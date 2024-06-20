@@ -4,7 +4,13 @@
 # host veth0 10.0.0.1/24   ホスト
 # ns1  veth0 10.0.0.2/24   ネームスペース
 
-# リンクアップ後数秒待たないとpingできないから時間稼ぎのための関数
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
+
+# リンクアップ後数秒待たないとpingできないから時間稼ぎのための関数??
 typing () {
 	while IFS= read -r -n1 char; do
 		printf "%s" "$char"
@@ -28,4 +34,4 @@ typing "ping from ns1 to host ....................."
 ip netns exec ns1 ping -R -c 1 10.0.0.1
 
 # delete namespace
-ip netns delete ns1
+#ip netns delete ns1

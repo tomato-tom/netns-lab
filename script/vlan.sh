@@ -7,6 +7,11 @@
 #         [veth3](vid 20) <--> ns1 10.0.0.3
 #         [veth4](vid 20) <--> ns1 10.0.0.4
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
 
 # ネームスペース作成
 ip netns add ns1

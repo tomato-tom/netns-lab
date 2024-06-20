@@ -11,6 +11,11 @@
 #         /         \
 #    [client-1]   [client-2]
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
 
 # ネームスペースの作成
 ip netns add client-1

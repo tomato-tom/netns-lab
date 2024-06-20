@@ -3,13 +3,14 @@
 # ネームスペース情報
 # 引数でネームスペース名指定、引数無しですべてのネームスペース情報
 nsinfo () {
+    allns=$(ip netns | sed 's/ (id: [0-9]\+)//g')
     if [ $# -eq 0 ]; then
-        nodes=$(ip netns)
+        nodes=$allns
     else
         nodes=$@
     fi
     for node in $nodes; do
-        if echo "$(ip netns)" | grep -q "$node"; then
+        if echo "$allns" | grep -q "$node"; then
             echo -n "$node "
             ip netns exec $node hostname -I
         else

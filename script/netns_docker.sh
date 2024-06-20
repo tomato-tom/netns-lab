@@ -3,6 +3,12 @@
 # Dockerコンテナとネットワークネームスペースをvethペアで接続、ping送る
 # ct1 o---o ns1
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
+
 # コンテナとネームスペースを作成
 docker run --privileged --network none -itd --name ct1 alpine
 ip netns add ns1

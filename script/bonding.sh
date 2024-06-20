@@ -8,6 +8,12 @@
 # ns1 veth1 o---o ns2 veth1
 # ns2 bond0 192.168.1.2/24
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
+
 # ネームスペース作成
 ip netns add ns1
 ip netns add ns2

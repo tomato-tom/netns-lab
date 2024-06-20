@@ -18,6 +18,13 @@
 #          en1   192.168.10.254/24
 # server   veth0 192.168.10.1/24
 
+
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
+
 # create nemespaces
 ip netns add client
 ip netns add router1
