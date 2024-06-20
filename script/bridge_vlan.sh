@@ -1,13 +1,12 @@
 #!/bin/bash
 
-# これは？？？？
 
-# ブリッジにネームスペースを接続してVLANで分離する
-# サブネット分離
+# ブリッジにネームスペースを接続してVLANとサブネットで分離する
 #
 #         ns0
-#         [veth0](vid 10 20) 10.0.0.254/16
-#           | 
+#         [veth0]
+#           | [veth0.10](vid 10) 10.0.10.254/24
+#           | [veth0.20](vid 20) 10.0.20.254/24
 #           | 
 #           | 
 #           | 
@@ -19,9 +18,12 @@
 #         [veth4](vid 20) <--> ns4 10.0.20.4/24
 
 
+# root権限確認
+if [ "$(id -u)" != "0" ]; then
+   echo "このスクリプトはroot権限で実行する必要があります" 1>&2
+   exit 1
+fi
 
-#!/bin/bash
-# ブリッジにネームスペースを接続してVLANで分離する
 
 # ネームスペース作成
 ip netns add ns0
@@ -30,10 +32,6 @@ ip netns add ns2
 ip netns add ns3
 ip netns add ns4
 ip --all netns exec ip link set lo up > /dev/null
-
-# VLAN有効でブリッジ作成
-ip link add netnsbr0 type bridge vlan_filtering 1 vlan_default_pvid 0
-ip link set netnsbr0 up
 
 # vethペア作成して各ネームスペースに割り当てる
 ip link add veth0 type veth peer veth0 netns ns0
@@ -57,6 +55,10 @@ ip netns exec ns1 ip addr add 10.0.10.1/24 dev veth0
 ip netns exec ns2 ip addr add 10.0.10.2/24 dev veth0
 ip netns exec ns3 ip addr add 10.0.20.3/24 dev veth0
 ip netns exec ns4 ip addr add 10.0.20.4/24 dev veth0
+
+# VLAN有効でブリッジ作成
+ip link add netnsbr0 type bridge vlan_filtering 1 vlan_default_pvid 0
+ip link set netnsbr0 up
 
 # vethペアをブリッジに接続
 ip link set veth0 master netnsbr0 up
