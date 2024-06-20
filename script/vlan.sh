@@ -62,7 +62,3 @@ ns4 10.0.0.4 vid 20
 
 EOF
 
-# 片付け
-#ip --all netns delete
-#ip link del netnsbr0
-

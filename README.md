@@ -1,8 +1,10 @@
 # netns-lab
 
 
-ネームスペースでネットワーク検証<br>
-動作確認 Ubuntu 24.04 その他RH系もおよそ動きそう
+ネームスペースでネットワーク検証
+
+<p>動作確認 Ubuntu 24.04</p>
+<p>RH系もおよそ動きそう</p>
 
 **root権限必要です**
 <br>
@@ -114,7 +116,9 @@ ip netns exec ns1 ip route # ルーティングテーブル
 ```sh
 ip netns delete ns1
 ip netns delete ns2
+ip --all netns delete
 ```
+
 <br>
 
 ### Script
@@ -143,7 +147,25 @@ grep -ril -e router -e nat .
 
 <br>
 
-### vethペア作成できない？
+### nsfunc
+
+一般ユーザで`script`ディレクトリにいる場合
+```sh
+sudo su
+source nsfunc.sh
+
+# ネームスペースのIPアドレス表示
+nsinfo               # すべてのネームスペース
+nsinfo ns1 ns5 rt3   # 引数でネームスペース指定
+
+# ネームスペースと関連するブリッジ、ファイルを削除
+rmns
+```
+
+もしくは`source $(pwd)/nsfunc.sh`を/root/.bashrc`等に追記すると便利かもしれません
+
+
+### ホストArchlinux
 
 Archlinuxでvethペア作成できない？<br>
 デフォルトではモジュール読み込まれないみたい
@@ -168,6 +190,21 @@ https://wiki.archlinux.jp/index.php/%E3%82%AB%E3%83%BC%E3%83%8D%E3%83%AB%E3%83%A
 bondingできない - Archlinux
 
 <br>
+
+
+### 今後追加してみたいスクリプト
+
+- LXC/LXDとつなげる
+- パケットフィルタリング iptables(nft)
+- 帯域制限シミュレーション
+- 動的ルーティング
+- トンネリング
+- IPV4/IPV6 over IPV4/IPV6
+- DHCP DNS
+
+本人よくわかってない、誰か追加してくれないかなあ...
+<br>
+
 
 ### 参考資料
 

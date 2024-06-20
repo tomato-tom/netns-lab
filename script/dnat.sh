@@ -83,6 +83,3 @@ ip netns exec client  ping -c 1 -R 198.51.100.234
 echo -e "\nclientから直接serverにping送ります..."
 ip netns exec client ping -c 1 -R 192.168.10.1
 
-# 片付け
-ip --all netns delete
-

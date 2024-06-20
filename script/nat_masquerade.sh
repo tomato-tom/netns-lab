@@ -63,6 +63,3 @@ ip netns exec client-1 ping -c 3 -R 203.0.133.100
 echo -e "\nWANからclient-1にping送ります..."
 ip netns exec WAN ping -c 3 -R 10.0.1.1
 
-# 片付け
-ip --all netns delete
-

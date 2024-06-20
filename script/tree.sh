@@ -285,5 +285,3 @@ ip netns exec NS08 ip route add default via 192.168.2.254 dev eth0
 ip netns exec NS09 ip route add default via 192.168.1.254 dev eth0
 ip netns exec NS10 ip route add default via 192.168.1.254 dev eth0
 
-
-#ip --all delete

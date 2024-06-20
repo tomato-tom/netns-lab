@@ -41,6 +41,3 @@ ip netns exec ns1 ping -c 3 192.168.1.2
 sleep 1
 ip netns exec ns1 ip -s -st link show dev bond0
 
-# 片付け
-#ip --all netns delete
-

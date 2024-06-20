@@ -182,11 +182,4 @@ done
 
 echo "$hosts"
 
-#set -x
-# 片付け
-#ip --all netns delete
-#ip link delete netnsbr1
-#ip link delete netnsbr2
-#ip link delete netnsbr3
-#rm -r /etc/netns/*
 

@@ -108,7 +108,4 @@ for ((i=1; i <= $count; i++)); do
 	ip netns exec $node hostname -I
 done
 
-#set -x
-# 片付け
-# ip --all netns delete
 
