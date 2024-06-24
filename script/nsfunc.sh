@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # ネームスペース情報
 # 引数でネームスペース名指定、引数無しですべてのネームスペース情報
 nsinfo () {
@@ -26,7 +27,7 @@ rmns() {
     ip --all netns delete
 
     # 名前がnetnsbr*のブリッジの削除 
-    interfaces=$(ip link | grep -o 'netnsbr[0-9]*')
+    interfaces=$(ip link | grep -o 'netnsbr[0-9]*' | uniq)
     for i in $interfaces; do
         ip link delete $i
     done
