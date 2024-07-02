@@ -21,7 +21,7 @@ networks:
         namespace: netnsbr0
 
 bridges:
-  - netns: netnsbr0
+  - namespace: netnsbr0
     name: br0
     interfaces:
       - name: veth0b
@@ -30,5 +30,5 @@ bridges:
 tests:
   - type: ping
     from: ns1
-    to: 10.0.1.1
+    to: 10.0.0.2
     count: 3
