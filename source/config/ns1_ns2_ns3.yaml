@@ -1,0 +1,39 @@
+version: '1'
+namespaces:
+  - name: ns1
+  - name: ns2
+  - name: ns3
+
+networks:
+  net1:
+    interfaces:
+      - name: veth0a
+        namespace: ns1
+        address: 10.0.0.2/24
+      - name: veth0b
+        namespace: ns2
+        address: 10.0.0.1/24
+  net2:
+    interfaces:
+      - name: veth1a
+        namespace: ns2
+        address: 10.0.1.1/24
+      - name: veth1b
+        namespace: ns3
+        address: 10.0.1.2/24
+
+routes:
+  - namespace: ns1
+    destination: default
+    gateway: 10.0.0.1
+    interface: veth0a
+  - namespace: ns3
+    destination: default
+    gateway: 10.0.1.1
+    interface: veth1b
+
+tests:
+  - type: ping
+    from: ns1
+    to: 10.0.1.1
+    count: 3

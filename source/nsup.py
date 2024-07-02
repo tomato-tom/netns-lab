@@ -1,6 +1,15 @@
 import yaml
 import subprocess
 import sys
+import os
+
+def load_yaml(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
+    except Exception as e:
+        print(f"エラー: YAMLファイルの読み込み中にエラーが発生しました: {e}")
+        sys.exit(1)
 
 def run_command(command):
     try:
@@ -56,18 +65,28 @@ def setup(config):
 
 
 def main():
-    try:
-        with open('config.yaml', 'r') as file:
-            config = yaml.safe_load(file)
-    except FileNotFoundError:
-        print("Error: network_config.yaml not found.")
-        sys.exit(1)
-    except yaml.YAMLError as e:
-        print(f"Error parsing YAML file: {e}")
+    # デフォルトの設定ファイル名
+    default_file = 'config.yaml'
+
+    # コマンドライン引数からファイル名を取得、なければデフォルトを使用
+    if len(sys.argv) > 1:
+        file_name = sys.argv[1]
+    else:
+        file_name = default_file
+
+    # 設定ファイルのパス
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, f'config/{file_name}')
+
+    # ファイルの存在確認
+    if not os.path.exists(file_path):
+        print(f"ファイル '{file_path}' が見つかりません。")
         sys.exit(1)
 
-    setup(config)
+    data = load_yaml(file_path)
+    setup(data)
 
 
 if __name__ == "__main__":
     main()
+
