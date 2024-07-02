@@ -66,6 +66,16 @@ def setup_bridges(bridges):
             run_command(f"{head} ip link set {name} up")
 
 
+def custom_commands(commands):
+    print("Running custom commands...")
+    for category, cmd_list in commands.items():
+        print(f"Executing {category} commands:")
+        for cmd in cmd_list:
+            namespace = cmd['namespace']
+            command = cmd['command']
+            run_command(f"ip netns exec {namespace} {command}")
+
+
 def run_tests(tests):
     print("Running tests...")
     for test in tests:
@@ -79,6 +89,7 @@ def setup(config):
     networks = config.get('networks', None)
     routes = config.get('routes', None)
     bridges = config.get('bridges', None)
+    commands = config.get('commands', None)
     tests = config.get('tests', None)
 
     if namespaces:
@@ -89,15 +100,15 @@ def setup(config):
         setup_routes(routes)
     if bridges:
         setup_bridges(bridges)
+    if commands:
+        custom_commands(commands)
     if tests:
         run_tests(tests)
 
 
 def main():
-    # デフォルトの設定ファイル名
+    # 設定ファイル名
     default_file = 'config/config.yaml'
-
-    # コマンドライン引数からファイル名を取得、なければデフォルトを使用
     if len(sys.argv) > 1:
         file_name = sys.argv[1]
     else:

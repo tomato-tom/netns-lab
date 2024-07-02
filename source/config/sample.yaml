@@ -1,0 +1,98 @@
+version: '1'
+
+# カスタムコマンドを入れた設定ファイル、編集中
+
+# create namespaces
+namespaces:
+  - name: ns1
+  - name: ns2
+  - name: ns3
+  - name: ns4
+  - name: netnsbr0
+
+networks:
+  net1:
+    interfaces:
+      - name: veth0a
+        namespace: ns1
+        address: 10.0.0.1/24
+      - name: veth0b
+        namespace: ns2
+        address: 10.0.0.2/24
+  net2:
+    interfaces:
+      - name: veth1a
+        namespace: ns2
+        address: 10.0.1.1/24
+      - name: veth1b
+        namespace: ns3
+        address: 10.0.1.2/24
+  net3:
+    interfaces:
+      - name: veth2a
+        namespace: ns3
+        address: 10.0.2.1/24
+      - name: veth2b
+        namespace: ns4
+        address: 10.0.2.2/24
+  net1:
+    interfaces:
+      - name: veth0a
+        namespace: ns1
+        address: 10.0.0.1/24
+      - name: veth0b
+        namespace: netnsbr0
+  net2:
+    interfaces:
+      - name: veth1a
+        namespace: ns2
+        address: 10.0.0.2/24
+      - name: veth1b
+        namespace: netnsbr0
+
+
+routes:
+  - namespace: ns1
+    destination: default
+    gateway: 10.0.0.2
+    interface: veth0a
+  - namespace: ns2
+    destination: 10.0.2.0/24
+    gateway: 10.0.1.2
+    interface: veth1a
+  - namespace: ns3
+    destination: 10.0.0.0/24
+    gateway: 10.0.1.1
+    interface: veth1b
+  - namespace: ns4
+    destination: default
+    gateway: 10.0.2.1
+    interface: veth2b
+
+bridges:
+  - namespace: netnsbr0
+    name: br0
+    interfaces:
+      - name: veth0b
+      - name: veth1b
+
+commands:
+  nat:
+    - namespace: ns2
+      command: iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    - namespace: ns2
+      command: sysctl -w net.ipv4.ip_forward=1
+  custom:
+    - namespace: ns1
+      command: ip route add 192.168.1.0/24 via 10.0.0.2
+
+tests:
+  - type: ping
+    from: ns1
+    to: 10.0.2.1
+    count: 3
+  - type: ping
+    from: ns4
+    to: 10.0.0.1
+    count: 3
+
