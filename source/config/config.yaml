@@ -1,60 +1,63 @@
 version: '1'
+
+# create namespaces
 namespaces:
-  - name: ns1
-  - name: ns2
-  - name: ns3
-  - name: ns4
+  - ns1
+  - ns2
+  - ns3
+  - ns4
 
-networks:
-  net1:
-    interfaces:
-      - name: veth0a
-        namespace: ns1
-        address: 10.0.0.1/24
-      - name: veth0b
-        namespace: ns2
-        address: 10.0.0.2/24
-  net2:
-    interfaces:
-      - name: veth1a
-        namespace: ns2
-        address: 10.0.1.1/24
-      - name: veth1b
-        namespace: ns3
-        address: 10.0.1.2/24
-  net3:
-    interfaces:
-      - name: veth2a
-        namespace: ns3
-        address: 10.0.2.1/24
-      - name: veth2b
-        namespace: ns4
-        address: 10.0.2.2/24
+# veth pair connection
+vethpairs:
+  - veth_a:
+      name: veth0a
+      namespace: ns1
+      address: 10.0.0.1/24
+    veth_b:
+      name: veth0b
+      namespace: ns2
+      address: 10.0.0.2/24
+  - veth_a:
+      name: veth1a
+      namespace: ns2
+      address: 10.0.1.1/24
+    veth_b:
+      name: veth1b
+      namespace: ns3
+      address: 10.0.1.2/24
+  - veth_a:
+      name: veth2a
+      namespace: ns3
+      address: 10.0.2.1/24
+    veth_b:
+      name: veth2b
+      namespace: ns4
+      address: 10.0.2.2/24
 
+# routing
 routes:
   - namespace: ns1
     destination: default
-    gateway: 10.0.0.2
+    via: 10.0.0.2
     interface: veth0a
   - namespace: ns2
     destination: 10.0.2.0/24
-    gateway: 10.0.1.2
+    via: 10.0.1.2
     interface: veth1a
   - namespace: ns3
     destination: 10.0.0.0/24
-    gateway: 10.0.1.1
+    via: 10.0.1.1
     interface: veth1b
   - namespace: ns4
     destination: default
-    gateway: 10.0.2.1
+    via: 10.0.2.1
     interface: veth2b
 
-tests:
-  - type: ping
-    from: ns1
-    to: 10.0.2.1
-    count: 3
-  - type: ping
-    from: ns4
-    to: 10.0.0.1
-    count: 3
+# costom commands
+commands:
+  - command: "ping -c 3 10.0.2.1"
+    namespace: ns1
+  - command: "ping -c 3 10.0.0.1"
+    namespace: ns4
+  - command: "echo hello network namespase"
+  - command: "date +%T"

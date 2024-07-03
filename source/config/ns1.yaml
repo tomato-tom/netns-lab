@@ -1,0 +1,13 @@
+version: '1'
+
+# create namespaces
+namespaces:
+  - ns1
+
+# costom commands
+commands:
+  - command: "ip address show"
+    namespace: ns1
+  - command: "echo hello network namespase"
+  - command: "date +%T"
+

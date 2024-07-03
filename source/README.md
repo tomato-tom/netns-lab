@@ -12,3 +12,10 @@ yamlファイルを引数で指定し読み込んで実行する場合の例
 sudo python3 nsup.py config/ns1_ns2.yaml
 ```
 
+- ネームスペース作成
+- vethペア接続
+- bridge接続
+- 静的IPアドレス
+- 静的ルート
+- カスタムコマンド
+

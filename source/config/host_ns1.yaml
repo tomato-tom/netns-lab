@@ -3,23 +3,20 @@ version: '1'
 # create namespaces
 namespaces:
   - ns1
-  - ns2
 
 # veth pair connection
 vethpairs:
   - veth_a:
       name: veth0a
-      namespace: ns1
       address: 10.0.0.1/24
     veth_b:
       name: veth0b
-      namespace: ns2
+      namespace: ns1
       address: 10.0.0.2/24
 
 # costom commands
 commands:
   - command: "ping -c 3 10.0.0.2"
-    namespace: ns1
   - command: "echo hello network namespase"
   - command: "date +%T"
 

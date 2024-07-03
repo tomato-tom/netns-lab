@@ -1,9 +1,25 @@
 import yaml
+from pyroute2 import IPRoute, netns, NetNS
 import subprocess
 import sys
 import os
+import time
 
-def load_yaml(file_path):
+
+def load_yaml():
+    default_file = 'config/config.yaml'
+    if len(sys.argv) > 1:
+        file_name = sys.argv[1]
+    else:
+        file_name = default_file
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, file_name)
+
+    if not os.path.exists(file_path):
+        print(f"ファイル '{file_path}' が見つかりません。")
+        sys.exit(1)
+
     try:
         with open(file_path, 'r') as file:
             return yaml.safe_load(file)
@@ -11,122 +27,120 @@ def load_yaml(file_path):
         print(f"エラー: YAMLファイルの読み込み中にエラーが発生しました: {e}")
         sys.exit(1)
 
-def run_command(command):
-    try:
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {command}")
-        print(f"Error message: {e}")
-        sys.exit(1)
+def create_namespace(namespaces):
+    for name in namespaces:
+        netns.create(name)
+        with NetNS(name) as ns:
+            lo_index = ns.link_lookup(ifname='lo')[0]
+            ns.link('set', index=lo_index, state='up')
 
-def setup_namespaces(namespaces):
-    print("Setting up namespaces...")
-    for ns in namespaces:
-        run_command(f"ip netns add {ns['name']}")
-        run_command(f"ip netns exec {ns['name']} ip link set lo up")
+def create_veth_pair(vethpairs):
 
-def setup_networks(networks):
-    print("Setting up networks...")
-    for net_name, net_config in networks.items():
-        ifaces = net_config['interfaces']
-        run_command(f"ip link add {ifaces[0]['name']} type veth peer name {ifaces[1]['name']}")
-        
-        for iface in ifaces:
-            name = iface['name']
-            namespace = iface['namespace']
-            address = iface.get('address', None)
-            run_command(f"ip link set {name} netns {namespace}")
-            head = f"ip netns exec {namespace}"
-            if address:
-                run_command(f"{head} ip addr add {address} dev {name}")
-            run_command(f"{head} ip link set {name} up")
+    for veth in vethpairs:
+        veth_a = veth['veth_a']['name']
+        veth_b = veth['veth_b']['name']
+        ns_a = veth['veth_a'].get('namespace')
+        ns_b = veth['veth_b'].get('namespace')
+        addr_a = veth['veth_a'].get('address')
+        addr_b = veth['veth_b'].get('address')
 
-def setup_routes(routes):
-    print("Setting up routes...")
-    for route in routes:
-        namespace = route['namespace']
-        dest = route['destination']
-        gway = route['gateway']
-        iface = route['interface']
-        run_command(f"ip netns exec {namespace} ip route add {dest} via {gway} dev {iface}")
+        with IPRoute() as ip:
+            ip.link('add', ifname=veth_a, kind='veth',  peer=veth_b)
+            dev_id = ip.link_lookup(ifname=veth_a)[0]
+            if ns_a:   # network namespace
+                ip.link('set', index=dev_id, net_ns_fd=ns_a)
+                with NetNS(ns_a) as ns:
+                    if addr_a:
+                        ns.addr('add', index=ns.link_lookup(ifname=veth_a)[0], address=addr_a)
+                    ns.link('set', index=ns.link_lookup(ifname=veth_a)[0], state='up')
+            else:      # host
+                if addr_a:
+                    ip.addr("add", index=dev_id, address=addr_a)
+                ip.link("set", index=dev_id, state="up")
+            dev_id = ip.link_lookup(ifname=veth_b)[0]
+            if ns_b:   # network namespace
+                ip.link('set', index=dev_id, net_ns_fd=ns_b)
+                with NetNS(ns_b) as ns:
+                    if addr_b:
+                        ns.addr('add', index=ns.link_lookup(ifname=veth_b)[0], address=addr_b)
+                    ns.link('set', index=ns.link_lookup(ifname=veth_b)[0], state='up')
+            else:      # host
+                if addr_b:
+                    ip.addr("add", index=dev_id, address=addr_b)
+                ip.link("set", index=dev_id, state="up")
 
+def create_bridge(bridges):
 
-def setup_bridges(bridges):
-    print("Setting up bridges...")
+    # Create bridge and add ports
     for br in bridges:
         namespace = br['namespace']
-        bridge = br['name']
-        head = f'ip netns exec {namespace}'
+        bridge_name = br['name']
+        ports = br['ports']
 
-        run_command(f"{head} ip link add {bridge} type bridge")
-        run_command(f"{head} ip link set {bridge} up")
-        for iface in br['interfaces']:
-            name = iface['name']
-            run_command(f"{head} ip link set {name} master {bridge}")
-            run_command(f"{head} ip link set {name} up")
+        with NetNS(namespace) as ns:
+            ns.link('add', ifname=bridge_name, kind='bridge')
+            ns.link('set', ifname=bridge_name, state='up')
+
+            for port in ports:
+                port_name = port['name']
+                bridge_index = ns.link_lookup(ifname=bridge_name)[0]
+                port_index = ns.link_lookup(ifname=port_name)[0]
+                ns.link('set', index=port_index, master=bridge_index)
+                ns.link('set', index=port_index, state='up')
 
 
-def custom_commands(commands):
-    print("Running custom commands...")
-    for category, cmd_list in commands.items():
-        print(f"Executing {category} commands:")
-        for cmd in cmd_list:
-            namespace = cmd['namespace']
+def add_route(routes):
+    for route in routes:
+        namespace = route['namespace']
+        destination = route['destination']
+        via = route['via']
+        interface = route['interface']
+        
+        with NetNS(namespace) as ns:
+            if destination == 'default':
+                ns.route('add', gateway=via, oif=ns.link_lookup(ifname=interface)[0])
+            else:
+                ns.route('add', dst=destination, gateway=via, oif=ns.link_lookup(ifname=interface)[0])
+
+def run_command(commands):
+    for cmd in commands:
+        if 'namespace' in cmd:
+            command = f"ip netns exec {cmd['namespace']} {cmd['command']}"
+        else:
             command = cmd['command']
-            run_command(f"ip netns exec {namespace} {command}")
-
-
-def run_tests(tests):
-    print("Running tests...")
-    for test in tests:
-        if test['type'] == 'ping':
-            print(f"Pinging from {test['from']} to {test['to']}")
-            run_command(f"ip netns exec {test['from']} ping -c {test['count']} {test['to']}")
-
-
-def setup(config):
-    namespaces = config.get('namespaces', None)
-    networks = config.get('networks', None)
-    routes = config.get('routes', None)
-    bridges = config.get('bridges', None)
-    commands = config.get('commands', None)
-    tests = config.get('tests', None)
-
-    if namespaces:
-        setup_namespaces(namespaces)
-    if networks:
-        setup_networks(networks)
-    if routes:
-        setup_routes(routes)
-    if bridges:
-        setup_bridges(bridges)
-    if commands:
-        custom_commands(commands)
-    if tests:
-        run_tests(tests)
-
+        try:
+            subprocess.run(command, shell=True, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing command: {command}")
+            print(f"Error message: {e}")
+            sys.exit(1)
 
 def main():
-    # 設定ファイル名
-    default_file = 'config/config.yaml'
-    if len(sys.argv) > 1:
-        file_name = sys.argv[1]
-    else:
-        file_name = default_file
+    config = load_yaml()
 
-    # 設定ファイルのパス
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_dir, file_name)
+    # Create namespaces
+    create_namespace(config['namespaces'])
 
-    # ファイルの存在確認
-    if not os.path.exists(file_path):
-        print(f"ファイル '{file_path}' が見つかりません。")
-        sys.exit(1)
+    # Create and configure veth pairs
+    vethpairs = config.get('vethpairs')
+    if vethpairs:
+        create_veth_pair(vethpairs)
 
-    data = load_yaml(file_path)
-    setup(data)
+    # Create bridge and add ports
+    bridges = config.get('bridges')
+    if bridges:
+        create_bridge(bridges)
+
+    # Configure routing
+    routes = config.get('routes')
+    if routes:
+        add_route(routes)
+
+    # Run custom commands
+    commands = config.get('commands')
+    if commands:
+        run_command(commands)
 
 
 if __name__ == "__main__":
     main()
-
