@@ -114,9 +114,9 @@ ip netns exec ns1 ip route # ルーティングテーブル
 
 ネームスペースを削除
 ```sh
-ip netns delete ns1
+ip netns delete ns1     #個別に削除する場合
 ip netns delete ns2
-ip --all netns delete
+ip --all netns delete   #まとめて全部のnetnsを削除する場合
 ```
 
 <br>
@@ -141,9 +141,10 @@ ip --all netns delete
 
 **スクリプトの検索**
 ```sh
-grep -ril vlan .
-grep -ril -e router -e nat .
+grep -ril <keyword> .
 ```
+keywords:
+nat, vlan, route, routing, bridge, subnet, bond, docker
 
 <br>
 
