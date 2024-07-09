@@ -1,7 +1,7 @@
 # Network Namespace Configuration Script
 
-This Python script automates the creation and configuration of network namespaces using pyroute2 based on a YAML configuration file. It provides a flexible way to set up complex network topologies for testing, development, or educational purposes.
-
+This Python script automates the creation and configuration of network namespaces using `pyroute2` based on a YAML configuration file. It provides a flexible way to set up complex network topologies for testing, learning, or hobbies.
+<br>
 
 ### Features
 
@@ -12,10 +12,11 @@ This Python script automates the creation and configuration of network namespace
 5. Static IP addresses are assigned to interfaces
 6. Static routes are added to enable communication between namespaces
 7. Custom commands are executed for any additional setup
+<br>
 
 ### Important Notes
 
-- **Root Privileges Required**: This script requires root privileges to create and configure network namespaces. Run it with sudo or as the root user.
+- **Root Privileges Required**: This script requires root privileges to create and configure network namespaces. Run it with `sudo` or as the root user.
 
 - **Recommended for Virtual Environments**: It is recommended to run this script in a virtual machine or a containerized environment. Modifying network configurations on a production system can lead to network disruptions and unintended consequences.
 
@@ -40,8 +41,8 @@ Remember, modifying network configurations can potentially disrupt network conne
 ### Requirements
 
 - Python 3.x
-- pyroute2 library
-- PyYAML library
+- `pyroute2` library
+- `PyYAML` library
 
 This script provides a powerful and flexible way to create virtual network topologies using Linux network namespaces, making it ideal for network testing, development, and educational scenarios.
 
