@@ -12,6 +12,7 @@ This Python script automates the creation and configuration of network namespace
 5. Static IP addresses are assigned to interfaces
 6. Static routes are added to enable communication between namespaces
 7. Custom commands are executed for any additional setup
+
 <br>
 
 ### Important Notes
@@ -27,7 +28,7 @@ This Python script automates the creation and configuration of network namespace
 3. Have a backup plan or recovery method in case of unexpected issues.
 
 Remember, modifying network configurations can potentially disrupt network connectivity. Use this script responsibly and with caution.
-
+<br>
 
 ### Usage
 
@@ -37,6 +38,7 @@ Remember, modifying network configurations can potentially disrupt network conne
    python script_name.py [path_to_config.yaml]
    ```
    If no config file is specified, it defaults to `config/config.yaml`
+<br>
 
 ### Requirements
 
