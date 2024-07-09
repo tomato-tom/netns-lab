@@ -163,8 +163,8 @@ nsinfo ns1 ns5 rt3   # 引数でネームスペース指定
 rmns
 ```
 
-もしくは`source $(pwd)/nsfunc.sh`を/root/.bashrc`等に追記すると便利かもしれません
-
+もしくは`/root/.bashrc`等に追記すると便利かもしれません
+<br>
 
 ### ホストArchlinux
 
@@ -198,12 +198,15 @@ bondingできない - Archlinux
 - LXC/LXDとつなげる
 - パケットフィルタリング iptables(nft)
 - 帯域制限シミュレーション
-- 動的ルーティング
+- 動的ルーティング: **BGP** **RIP** **OSPF**
 - トンネリング
-- IPV4/IPV6 over IPV4/IPV6
+- IP v4/v6 over IP v4/v6
 - DHCP DNS
 
-本人よくわかってない、誰か追加してくれないかなあ...
+> `iptables`は**legacy**らしいけどまだまだ**iptables**いけます！
+> そのうちに**nftables**も対応するかも知らません
+> [Chapter 10. Getting started with nftables](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/securing_networks/getting-started-with-nftables_securing-networks#when-to-use-firewalld-nftables-or-iptables_assembly_migrating-from-iptables-to-nftables)
+
 <br>
 
 
@@ -227,17 +230,24 @@ https://www.bit-hive.com/articles/20230315
 https://blog.amedama.jp/archive/category/Network%20Namespace#google_vignette
 )
 > 各種ルーティング、C言語でネームスペース作成とか
+> 「Linuxで動かしながら学ぶTCP/IPネットワーク入門」著者の方
+
 
 <br>
 
 [ネットワーク勉強まとめ](
 https://zenn.dev/bells17/scraps/ced3289cd8116d
 )
-> FRRoutingでOSPF
+> FRRoutingでOSPFなどなど...
 
 <br>
 
 [Manpages of iproute2 in Debian unstable](
 https://manpages.debian.org/unstable/iproute2/index.html
 )
-
+- [ip-netns - process network namespace management](https://manpages.debian.org/unstable/iproute2/ip-netns.8.en.html)
+- [ip-link - network device configuration](https://manpages.debian.org/unstable/iproute2/ip-link.8.en.html)
+- [ip-address - protocol address management](https://manpages.debian.org/unstable/iproute2/ip-address.8.en.html)
+- [ip-route - routing table management](https://manpages.debian.org/unstable/iproute2/ip-route.8.en.html)
+- [ip-neighbour - neighbour/arp tables management.](https://manpages.debian.org/unstable/iproute2/ip-neighbour.8.en.html)
+- [bridge - show / manipulate bridge addresses and devices](https://manpages.debian.org/unstable/iproute2/bridge.8.en.html)
