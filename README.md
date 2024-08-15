@@ -12,18 +12,7 @@
 ### 主要ツール
 
 - iproute2
-```sh
-$ apt info iproute2
-Package: iproute2
-Version: 6.1.0-1ubuntu6
-```
-
 - iptables(nft)
-```sh
-$ apt info iptables
-Package: iptables
-Version: 1.8.10-3ubuntu2
-```
 <br>
 
 ### 最もシンプルなネットワーク
@@ -204,7 +193,7 @@ bondingできない - Archlinux
 - DHCP DNS
 
 > `iptables`は**legacy**らしいけどまだまだ**iptables**いけます！
-> そのうちに**nftables**も対応するかも知らません
+> そのうちに**nftables**も対応するかも知れません
 > [Chapter 10. Getting started with nftables](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/securing_networks/getting-started-with-nftables_securing-networks#when-to-use-firewalld-nftables-or-iptables_assembly_migrating-from-iptables-to-nftables)
 
 <br>
