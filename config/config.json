@@ -1,0 +1,74 @@
+{
+  "host": {
+    "links": [
+      {
+        "name": "ns-br0",
+        "type": "bridge",
+        "ports": [
+          "ve-ns1",
+          "ve-ns2"
+        ],
+        "state": "UP",
+        "ip_addresses": []
+      },
+      {
+        "name": "ve-ns1",
+        "type": "veth",
+        "master": "ns-br0",
+        "peer": {
+          "name": "en0",
+          "netns": "ns1"
+        },
+        "state": "UP",
+        "ip_addresses": []
+      },
+      {
+        "name": "ve-ns2",
+        "type": "veth",
+        "master": "ns-br0",
+        "peer": {
+          "name": "en0",
+          "netns": "ns2"
+        },
+        "state": "UP",
+        "ip_addresses": []
+      }
+    ]
+  },
+  "netns": [
+    {
+      "name": "ns1",
+      "links": [
+        {
+          "name": "en0",
+          "type": "veth",
+          "peer": {
+            "name": "ve-ns1",
+            "connected": "ns-br0"
+          },
+          "state": "UP",
+          "ip_addresses": [
+            "10.1.1.101/24"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ns2",
+      "links": [
+        {
+          "name": "en0",
+          "type": "veth",
+          "peer": {
+            "name": "ve-ns2",
+            "connected": "ns-br0"
+          },
+          "state": "UP",
+          "ip_addresses": [
+            "10.1.1.102/24"
+          ]
+        }
+      ]
+    }
+  ]
+}
